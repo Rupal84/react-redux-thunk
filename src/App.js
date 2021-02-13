@@ -1,25 +1,42 @@
-import logo from './logo.svg';
+import {useState} from 'react';
+import {connect} from 'react-redux';
 import './App.css';
+import {fetchPosts} from './actions'
 
-function App() {
+function App(props) {
+  const [name, setName] = useState('');
+  const handleInputChange = (e) => {
+    setName(e.target.value)
+  }
+  const getUsers = (users) => {
+    return users.map((user)=> {
+      return <li key={user.id}>{user.name}</li>
+    })
+  }
+  const handleSubmit = () => {
+    props.updateName(name)
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input type="text" value={name} onChange={(e)=> handleInputChange(e)}/>
+      <button type="button" onClick={()=> handleSubmit()}>Submit</button>
+      <p>{props.name}</p>
+      <ul>{getUsers(props.users)}</ul>
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = ({personalDetails, users}) => {
+  return {
+    name: personalDetails.name,
+    users: users.users
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updateName: (value)=> dispatch(fetchPosts(value))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
